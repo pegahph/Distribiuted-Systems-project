@@ -55,6 +55,7 @@ class Node:
         server_thread.start()
 
     def runServer(self):
+        print("ip", self.host)
         server = socket.socket(
             socket.AF_INET, socket.SOCK_STREAM)
         server.bind((self.host, self.port))

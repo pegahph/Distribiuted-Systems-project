@@ -1,28 +1,29 @@
 import socket
 import threading
-
+import json
 
 class Node:
-    def __init__(self, neighbors):
-        self.port = 5000
-        self.host = socket.gethostbyname(socket.gethostname())
+    def __init__(self, port, host, neighbors, probability):
+        self.port = port
+        self.host = host
         self.neighbors = neighbors
-        self.clientList = []
+        self.clients = []
+        self.probability = probability
+        self.nickname = input("Choose a nickname: ")
         if len(neighbors) == 0:
             self.runServer()
         else:
-            self.nickname = input("Choose a nickname: ")
             self.runClient()
 
     def clientReceive(self):
         while True:
             try:
-                for client in self.clientList:
-                    message = client.recv(1024).decode("ascii")
-                    if message == "NICK":
-                        client.send(self.nickname.encode("ascii"))
-                    else:
-                        print(message)
+                for client in self.clients:
+                    message = json.loads(client.recv(1024).decode("ascii"))
+                    if message['PROB']:
+                        self.probability = message["PROB"]
+                        print(self.probability)
+
             except:
                 print("An error occurred!")
                 client.close()
@@ -31,13 +32,13 @@ class Node:
     def clientWrite(self):
         while True:
             message = f'{self.nickname}: {input("")}'
-            for client in self.clientList:
+            for client in self.clients:
                 client.send(message.encode("ascii"))
 
     def runClient(self):
         for neighbor in self.neighbors:
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.clientList.append(client)
+            self.clients.append(client)
             try:
                 client = client.connect((neighbor, self.port))
                 receive_thread = threading.Thread(
@@ -48,9 +49,10 @@ class Node:
                     target=self.clientWrite)
                 write_thread.start()
 
-            except:
+            except Exception as e:
+                print(e)
                 print(f'An error occurred! for ip {neighbor}')
-                
+
         server_thread = threading.Thread(target=self.runServer)
         server_thread.start()
 
@@ -60,23 +62,29 @@ class Node:
             socket.AF_INET, socket.SOCK_STREAM)
         server.bind((self.host, self.port))
         server.listen()
-        print("server is listening...")
+        print(f"{self.nickname}'s server is listening...")
         while True:
             client, address = server.accept()
             print(f'Connected with {str(address)}')
-
-            client.send('NICK'.encode("ascii"))
-            nickname = client.recv(1024).decode("ascii")
-
-            print(f'Nickname of the client is {nickname}')
-            client.send("Connected to the server".encode("ascii"))
+            self.clients.append(client)
+            print(client)
+            data = {"PROB": self.probability}
+            client.send(json.dumps(data).encode("ascii"))
+            # client.send("Connected to the server".encode("ascii"))
 
 
 neighbors = []
+probability = None
+port = 5000
+host = socket.gethostbyname(socket.gethostname())
+
 haveOthersIpAddr = input(
     "Do you have your neighbors ip addresses? Enter yes/no \n")
 if haveOthersIpAddr == "yes":
     print("Enter you Ip addresses separating with comma and no white spaces:")
     neighbors = input().split(',')
+    host = input("Enter your Ip: \n")
+else:
+    probability = float(input("Enter the probability: \n"))
 
-node = Node(neighbors)
+node = Node(port, host, neighbors, probability)

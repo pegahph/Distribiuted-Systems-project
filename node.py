@@ -1,14 +1,16 @@
 import socket
 import threading
 import json
+import random
 
+probability = 0.5
 class Node:
-    def __init__(self, port, host, neighbors, probability):
+    def __init__(self, port:int, host:str, neighbors:set):
         self.port = port
         self.host = host
         self.neighbors = neighbors
+        self.accessibleNodes = []
         self.clients = []
-        self.probability = probability
         self.nickname = input("Choose a nickname: ")
         if len(neighbors) == 0:
             self.runServer()
@@ -20,10 +22,7 @@ class Node:
             try:
                 for client in self.clients:
                     message = json.loads(client.recv(1024).decode("ascii"))
-                    if message['PROB']:
-                        self.probability = message["PROB"]
-                        print(self.probability)
-
+                    print(f'Received a message: {message}')
             except:
                 print("An error occurred!")
                 client.close()
@@ -32,8 +31,12 @@ class Node:
     def clientWrite(self):
         while True:
             message = f'{self.nickname}: {input("")}'
-            for client in self.clients:
-                client.send(message.encode("ascii"))
+            gossip= int((1- probability)*len(self.neighbors))
+            self.accessibleNodes= random.sample(self.clients, k=gossip)
+            for client in self.accessibleNodes:
+                host, port = client.getpeername()
+                client.send(bytes(json.dumps(message).encode()))
+                print(f'Sending Packet to : {host}' )
 
     def runClient(self):
         for neighbor in self.neighbors:
@@ -66,15 +69,10 @@ class Node:
         while True:
             client, address = server.accept()
             print(f'Connected with {str(address)}')
-            self.clients.append(client)
-            print(client)
-            data = {"PROB": self.probability}
-            client.send(json.dumps(data).encode("ascii"))
             # client.send("Connected to the server".encode("ascii"))
 
 
 neighbors = []
-probability = None
 port = 5000
 host = socket.gethostbyname(socket.gethostname())
 
@@ -84,7 +82,5 @@ if haveOthersIpAddr == "yes":
     print("Enter you Ip addresses separating with comma and no white spaces:")
     neighbors = input().split(',')
     host = input("Enter your Ip: \n")
-else:
-    probability = float(input("Enter the probability: \n"))
 
-node = Node(port, host, neighbors, probability)
+node = Node(port, host, neighbors)

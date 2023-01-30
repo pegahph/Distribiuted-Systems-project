@@ -35,6 +35,7 @@ def th_server():
     global Packet_string_old
     Packet_string_new = ""
     global Packet_string
+    global clock
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((host, PORT))
@@ -62,7 +63,7 @@ def th_client():
         else:
             final_neighbor_list = neighbor_ip
 
-        if Packet_string != "":          
+        if Packet_string != "":         
             for ip in final_neighbor_list:
                 message_packet = {
                     "clock": clock + 1,

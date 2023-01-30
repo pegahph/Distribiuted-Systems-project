@@ -34,7 +34,7 @@ def th_server():
 
         clientsocket, address = server.accept()
 
-        Packet_string_new = clientsocket.recv(1024).decode()
+        Packet_string_new = json.loads(clientsocket.recv(1024).decode())
 
         if Packet_string_new != Packet_string_old :
             Packet_string=Packet_string_new

@@ -26,8 +26,7 @@ def th_server():
     global Packet_string_old
     Packet_string_new=""
     global Packet_string
-    global clock
-    
+
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((host,PORT))
     server.listen(5)
@@ -47,24 +46,22 @@ def th_client():
 
     global final_neighbor_list
     global Packet_string
-    
-    while True:
-      if num_neighbor>1 :
-            final_neighbor_list= random.sample(neighbor_ip, k=gossip)
-      else:
-            final_neighbor_list=neighbor_ip
-            
-      if Packet_string != ""  :  
-        c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        for ip in final_neighbor_list:
-            message_packet = {
-                "clock": clock + 1,
-                "packet": Packet_string
-            }
-            c.connect((ip,PORT))
-            c.send(bytes(json.dumps(message_packet).encode()))
-            print(f'Sending Packet to : {ip}' )
+    while True:  
+        gossip = int((1-prob_gossip)*num_neighbor)      
+        if num_neighbor > 1:
+            final_neighbor_list = random.sample(neighbor_ip, k=gossip)
+        else:
+            final_neighbor_list = neighbor_ip
+
+        if Packet_string != "":          
+            for ip in final_neighbor_list:
+                message_packet = {
+                    "clock": clock + 1,
+                    "packet": Packet_string
+                }
+                neighbors_socket[ip].send(bytes(json.dumps(message_packet).encode()))
+                print(f'Sending Packet to : {ip}')
 
             
         Packet_string= ""

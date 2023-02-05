@@ -85,15 +85,13 @@ if packet_string:
                               final_neighbor_list= random.sample(nodes[port].neighbors, k=1)
                         else:
                               final_neighbor_list= random.sample(nodes[port].neighbors, k=gossip)
-                        
                         for i in range(0,len(final_neighbor_list)):
                               c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                               if final_neighbor_list[i] not in recieved_ports_list:
                                     c.connect(('127.0.0.1',final_neighbor_list[i]))
                                     if final_neighbor_list[i] not in recieved_ports_list:
                                           c.send(bytes(Packet_string.encode()))
-                                          print(f"port {port} -----> {final_neighbor_list[i]} : {Packet_string}\n")
-            
+                                          print(f"port {port} -----> {final_neighbor_list[i]} : {Packet_string}\n")           
           
 
 for i in range(0,thread_count):

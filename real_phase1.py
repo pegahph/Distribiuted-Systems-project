@@ -31,7 +31,7 @@ def th_server():
     while True:
         clientsocket, address = server.accept()
         Packet_string_new = json.loads(clientsocket.recv(1024).decode())
-  
+
         if Packet_string_new != Packet_string_old:
             Packet_string = Packet_string_new
             print(f"Node Received New Message: {Packet_string}")
@@ -48,12 +48,11 @@ def th_client():
             final_neighbor_list = random.sample(neighbor_ip, k=gossip)
         else:
             final_neighbor_list = neighbor_ip
-
+            
         if Packet_string != "":          
             for ip in final_neighbor_list:
                 neighbors_socket[ip].send(bytes(json.dumps(Packet_string).encode()))
                 print(f'Sending Packet to : {ip}')
-
             Packet_string = ""
 
 

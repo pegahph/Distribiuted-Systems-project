@@ -115,6 +115,7 @@ def th_client():
     while True:
         c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if Packet_string["type"] != "" and len(infected_nodes) != len(neighbor_ip):
+            print(infected_nodes)
             if num_neighbor > 1:
                 final_neighbor_list= random.sample(neighbor_ip, k=gossip)
             else:
@@ -124,10 +125,11 @@ def th_client():
                 c.send((json.dumps(Packet_string)).encode())      
             else:
                 for ip in final_neighbor_list:
-                    c.connect((ip,55555))
-                    c.send((json.dumps(Packet_string)).encode())
-                    if ip not in infected_nodes:
-                        infected_nodes.append(ip)
+                    if ip != Packet_string["ip"]:
+                        c.connect((ip,55555))
+                        c.send((json.dumps(Packet_string)).encode())
+                        if ip not in infected_nodes:
+                            infected_nodes.append(ip)
        
         Packet_string= {
             "type": "",

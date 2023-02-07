@@ -4,7 +4,6 @@ import json
 import time
 import random
 
-counter = 1
 Packet_string = {
     "type": "",
     "ip": ""
@@ -28,18 +27,18 @@ host = input("Enter Your IP Address: ")
 ip_string = input(f"Enter the address of neighbors (split with '&'): ")
 first_mem = input("Are you a first member? (yes|no) ")
 neighbor_ip = ip_string.split('&')
-infected_nodes = []
+
 
 num_neighbor = len(neighbor_ip)
 gossip = int((1-prob_gossip)*num_neighbor)
 
 
 def id_check(packet):
-    global counter
     global packet_types
     global final_neighbor_list
     packet_id = packet["id"]
-
+    
+    
     if packet_id == id_user:
         packet = {
             "type": packet_types["CHECK_USER_ID_RESPONSE"],
@@ -47,13 +46,14 @@ def id_check(packet):
             "receiver_ip": packet["ip"]
         }
         return packet
-
-    elif packet_id != id_user:
-        return ({
-             "type": packet_types["CHECK_USER_ID"],
-             "id": packet_id,
-             "ip": packet["ip"]
-           })
+    
+    #elif packet_id != id_user:
+        #return ({
+             #"type": packet_types["CHECK_USER_ID"],
+             #"id": packet_id,
+             #"ip": packet["ip"]
+           #})
+   
 
     else:
         return ({
@@ -85,7 +85,7 @@ def th_server():
                 Packet_string = {
                   "type": packet_types["CHECK_USER_ID"],
                   "id": id_user,
-                  "ip": host
+                  "ip": Packet_string_new["receiver_ip"]
                 }
 
                 ''''
@@ -103,42 +103,38 @@ def th_server():
                     Packet_string = Packet_string_new
                     print(Packet_string["message"])
                 Packet_string_old = Packet_string_new
-
+        
 
 def th_client():
     global Packet_string
     global neighbor_ip
     global packet_types
     global final_neighbor_list
-    global infected_nodes
+    
 
     while True:
         c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if Packet_string["type"] != "" and len(infected_nodes) != len(neighbor_ip):
-            print(infected_nodes)
-            if num_neighbor > 1:
+        if num_neighbor > 1:
                 final_neighbor_list= random.sample(neighbor_ip, k=gossip)
-            else:
-                final_neighbor_list=neighbor_ip          
+        else:
+                final_neighbor_list=neighbor_ip 
+
+       
+        if Packet_string["type"] != "" :
+           
             if Packet_string["type"] == packet_types["CHECK_USER_ID_RESPONSE"]:
                 c.connect((Packet_string["receiver_ip"],55555))
-                c.send((json.dumps(Packet_string)).encode())      
+                c.send((json.dumps(Packet_string)).encode())
+                     
             else:
                 for ip in final_neighbor_list:
-                    if ip != Packet_string["ip"]:
-                        c.connect((ip,55555))
-                        c.send((json.dumps(Packet_string)).encode())
-                        if ip not in infected_nodes:
-                            infected_nodes.append(ip)
-       
+                    c.connect((ip,55555))
+                    c.send((json.dumps(Packet_string)).encode())
+                                        
         Packet_string= {
             "type": "",
             "ip": "" 
         }
-        infected_nodes = []
-
-
-
 
 client_thread = threading.Thread(target=th_client)
 client_thread.start()
@@ -155,15 +151,18 @@ if first_mem=="no":
         "ip": host
     }
     
+else: 
+     print(f"{id_user} joined...")  
 
+  
 
-while True:
-        time.sleep(1)
-    #if Packet_string["type"] == "":
-        new_message = input("")
-        Packet_string_old = {
-            "type": packet_types["MESSAGE"],
-            "ip": host,
-            "message": id_user + ":" + new_message
-        }
-        Packet_string=Packet_string_old
+while True:  
+      time.sleep(1) 
+      if Packet_string["type"] ==""  :   
+           new_message = input("")
+           Packet_string = {
+                 "type": packet_types["MESSAGE"],
+                 "ip": host,
+                 "message": id_user + ":" + new_message
+                }
+                #Packet_string=Packet_string_old

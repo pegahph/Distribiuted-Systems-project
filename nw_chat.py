@@ -117,6 +117,7 @@ def th_client():
 
     while True:
         if len(infected_nodes) != len(neighbor_ip):
+            c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             if num_neighbor > 1:
                 final_neighbor_list = random.sample(neighbor_ip, k=gossip)
             else:

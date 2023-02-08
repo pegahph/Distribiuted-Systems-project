@@ -7,7 +7,7 @@ import random
 Packet_string = {
     "type": "",
     "ip": ""
-   }
+}
 neighbor_ip = []
 id_user = ""
 ip_sender = ""
@@ -37,20 +37,19 @@ def id_check(packet):
         }
         return packet
 
-    
     # elif packet_id != id_user:
     #     return ({
     #          "type": packet_types["CHECK_USER_ID"],
     #          "id": packet_id,
     #          "ip": packet["ip"]
-    #        })   
+    #        })
 
     else:
         return ({
             "type": packet_types["MESSAGE"],
             "message": f"\n{packet_id} joined.. ",
             "ip": Packet_string["ip"]
-            })
+        })
 
 
 def th_server():
@@ -74,16 +73,16 @@ def th_server():
         if Packet_string_new["type"] == packet_types["UPDATE_NEIGHBOR"]:
             if Packet_string_new["ip"] not in neighbor_ip:
                 neighbor_ip.append(Packet_string_new["ip"])
-            print("neighbor_ip",neighbor_ip)
+            print("neighbor_ip", neighbor_ip)
         elif Packet_string_new["type"] == packet_types["CHECK_USER_ID_RESPONSE"]:
-                id_user = input("choose ANOTHER id: ")
-                Packet_string = {
-                  "type": packet_types["CHECK_USER_ID"],
-                  "id": id_user,
-                  "ip": Packet_string_new["receiver_ip"]
-                }
+            id_user = input("choose ANOTHER id: ")
+            Packet_string = {
+                "type": packet_types["CHECK_USER_ID"],
+                "id": id_user,
+                "ip": Packet_string_new["receiver_ip"]
+            }
 
-                ''''
+            ''''
                 Packet_string={
                     "type": packet_types["MESSAGE"],
                     "message" :f"\n{id_user} joined... ",
@@ -91,14 +90,14 @@ def th_server():
                 }
                '''
         elif Packet_string_new["type"] == packet_types["CHECK_USER_ID"]:
-                Packet_string = id_check(Packet_string_new)
+            Packet_string = id_check(Packet_string_new)
 
         else:
-                if Packet_string_new != Packet_string_old:
-                    Packet_string = Packet_string_new
-                    print(Packet_string["message"])
-                Packet_string_old = Packet_string_new
-        
+            if Packet_string_new != Packet_string_old:
+                Packet_string = Packet_string_new
+                print(Packet_string["message"])
+            Packet_string_old = Packet_string_new
+
 
 def th_client():
     global Packet_string
@@ -108,10 +107,10 @@ def th_client():
     global infected_nodes
     global first_mem
 
-    if first_mem=="no":
+    if first_mem == "no":
         for ip in neighbor_ip:
             neighbor_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            neighbor_socket.connect((ip,55555))
+            neighbor_socket.connect((ip, 55555))
             neighbor_socket.send(json.dumps({
                 "type": packet_types["UPDATE_NEIGHBOR"],
                 "ip": host
@@ -121,28 +120,31 @@ def th_client():
         if len(infected_nodes) != len(neighbor_ip):
             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             if num_neighbor > 1:
-                    final_neighbor_list= random.sample(neighbor_ip, k=gossip)
+                final_neighbor_list = random.sample(neighbor_ip, k=gossip)
             else:
-                    final_neighbor_list=neighbor_ip 
+                final_neighbor_list = neighbor_ip
 
-        
-            if Packet_string["type"] != "" :
+            if Packet_string["type"] != "":
                 if Packet_string["type"] == packet_types["CHECK_USER_ID_RESPONSE"]:
-                    c.connect((Packet_string["receiver_ip"],55555))
+                    c.connect((Packet_string["receiver_ip"], 55555))
                     c.send((json.dumps(Packet_string)).encode())
-                        
+
                 else:
                     for ip in final_neighbor_list:
                         if ip != Packet_string["ip"]:
-                            c.connect((ip,55555))
-                            c.send((json.dumps(Packet_string)).encode())
+                            try:
+                                c.send((json.dumps(Packet_string)).encode())
+                            except:
+                                c.connect((ip, 55555))
+                                c.send((json.dumps(Packet_string)).encode())
                             if ip not in infected_nodes:
                                 infected_nodes.append(ip)
-            infected_nodes.clear()                            
-            Packet_string= {
+            infected_nodes.clear()
+            Packet_string = {
                 "type": "",
-                "ip": "" 
+                "ip": ""
             }
+
 
 host = input("Enter Your IP Address: ")
 
@@ -166,25 +168,24 @@ client_thread = threading.Thread(target=th_client)
 client_thread.start()
 
 
-if first_mem=="no":
-    Packet_string={
+if first_mem == "no":
+    Packet_string = {
         "type": packet_types["CHECK_USER_ID"],
         "id": id_user,
         "ip": host
     }
-    
-else: 
-    print(f"{id_user} joined...")  
 
-  
+else:
+    print(f"{id_user} joined...")
 
-while True:  
-      time.sleep(1) 
-      if Packet_string["type"] ==""  :   
-           new_message = input("")
-           Packet_string = {
-                 "type": packet_types["MESSAGE"],
-                 "ip": host,
-                 "message": id_user + ":" + new_message
-                }
-                #Packet_string=Packet_string_old
+
+while True:
+    time.sleep(1)
+    if Packet_string["type"] == "":
+        new_message = input("")
+        Packet_string = {
+            "type": packet_types["MESSAGE"],
+            "ip": host,
+            "message": id_user + ":" + new_message
+        }
+        # Packet_string=Packet_string_old

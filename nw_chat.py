@@ -23,11 +23,15 @@ packet_types = {
     "MESSAGE": "MESSAGE",
     "UPDATE_NEIGHBOR": "UPDATE_NEIGHBOR"
 }
-
+id_check_counter = 0
 
 def id_check(packet):
     global packet_types
     global final_neighbor_list
+    global id_check_counter
+    global neighbor_ip
+
+    id_check_counter += 1
     packet_id = packet["id"]
     if packet_id == id_user:
         packet = {
@@ -37,7 +41,7 @@ def id_check(packet):
         }
         return packet
 
-    elif packet_id != id_user:
+    elif packet_id != id_user and id_check_counter!= len(neighbor_ip):
         return ({
              "type": packet_types["CHECK_USER_ID"],
              "id": packet_id,

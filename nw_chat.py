@@ -7,7 +7,6 @@ import random
 Packet_string = {
     "type": "",
     "ip": "",
-    "history": []
 }
 neighbor_ip = []
 id_user = ""
@@ -17,7 +16,6 @@ final_neighbor_list = []
 Packet_string_old = {
     "type": "",
     "ip": "",
-    "history": []
 }
 packet_types = {
     "CHECK_USER_ID": "CHECK_USER_ID",
@@ -26,7 +24,6 @@ packet_types = {
     "UPDATE_NEIGHBOR": "UPDATE_NEIGHBOR"
 }
 id_check_counter = 0
-history = []
 
 def id_check(packet):
     global packet_types
@@ -40,7 +37,6 @@ def id_check(packet):
             "type": packet_types["CHECK_USER_ID_RESPONSE"],
             "message": "refused",
             "ip": packet["ip"],
-            "history": packet["history"]
         }
         return packet
 
@@ -49,7 +45,6 @@ def id_check(packet):
              "type": packet_types["CHECK_USER_ID"],
              "id": packet_id,
              "ip": packet["ip"],
-             "history": packet["history"]
            })
 
     else:
@@ -57,7 +52,6 @@ def id_check(packet):
             "type": packet_types["MESSAGE"],
             "message": f"\n{packet_id} joined.. ",
             "ip": Packet_string["ip"],
-            "history": packet["history"]
         })
 
 
@@ -67,12 +61,10 @@ def th_server():
     global Packet_string_old
     global packet_types
     global neighbor_ip
-    global history
 
     Packet_string_new = {
         "type": "",
         "ip": "",
-        "history": [],
     }
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -93,7 +85,6 @@ def th_server():
                     "type": packet_types["CHECK_USER_ID"],
                     "id": id_user,
                     "ip": Packet_string_new["ip"],
-                    "history": Packet_string_new["history"]
                 }
 
             ''''
@@ -109,7 +100,6 @@ def th_server():
         else:
             if Packet_string_new != Packet_string_old:
                 Packet_string = Packet_string_new
-                history.append(Packet_string["message"])
                 print(Packet_string["message"])
             Packet_string_old = Packet_string_new
 
@@ -147,7 +137,6 @@ def th_client():
                     Packet_string = {
                         "type": "",
                         "ip": "",
-                        "history": history
                     }
                     infected_nodes.clear()
 
@@ -212,11 +201,9 @@ while True:
     time.sleep(1)
     if Packet_string["type"] == "":
         new_message = input("")
-        history.append(new_message)
         Packet_string = {
             "type": packet_types["MESSAGE"],
             "ip": host,
             "message": id_user + ":" + new_message,
-            "history": history
         }
         # Packet_string=Packet_string_old

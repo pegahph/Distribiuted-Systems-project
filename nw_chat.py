@@ -37,12 +37,12 @@ def id_check(packet):
         }
         return packet
 
-    # elif packet_id != id_user:
-    #     return ({
-    #          "type": packet_types["CHECK_USER_ID"],
-    #          "id": packet_id,
-    #          "ip": packet["ip"]
-    #        })
+    elif packet_id != id_user:
+        return ({
+             "type": packet_types["CHECK_USER_ID"],
+             "id": packet_id,
+             "ip": packet["ip"]
+           })
 
     else:
         return ({

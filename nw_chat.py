@@ -36,7 +36,7 @@ def id_check(packet):
         packet = {
             "type": packet_types["CHECK_USER_ID_RESPONSE"],
             "message": "refused",
-            "receiver_ip": packet["ip"]
+            "ip": packet["ip"]
         }
         return packet
 
@@ -76,14 +76,16 @@ def th_server():
         if Packet_string_new["type"] == packet_types["UPDATE_NEIGHBOR"]:
             if Packet_string_new["ip"] not in neighbor_ip:
                 neighbor_ip.append(Packet_string_new["ip"])
-        elif Packet_string_new["type"] == packet_types["CHECK_USER_ID_RESPONSE"]:           
-            if packet_types["message"] == "refused" and Packet_string_new["receiver_ip"] == host:
+        elif Packet_string_new["type"] == packet_types["CHECK_USER_ID_RESPONSE"]:    
+            Packet_string = Packet_string_new
+            print(Packet_string_new["ip"] == host)
+            if Packet_string_new["message"] == "refused" and Packet_string_new["ip"] == host:
                 id_user = input("choose ANOTHER id: ")
-                # Packet_string = {
-                #     "type": packet_types["CHECK_USER_ID"],
-                #     "id": id_user,
-                #     "ip": Packet_string_new["receiver_ip"]
-                # }
+                Packet_string = {
+                    "type": packet_types["CHECK_USER_ID"],
+                    "id": id_user,
+                    "ip": Packet_string_new["ip"]
+                }
 
             ''''
                 Packet_string={
@@ -129,7 +131,7 @@ def th_client():
 
             if Packet_string["type"] != "":
                 if Packet_string["type"] == packet_types["CHECK_USER_ID_RESPONSE"] and Packet_string["ip"] in neighbor_ip:
-                    c.connect((Packet_string["receiver_ip"], 55555))
+                    c.connect((Packet_string["ip"], 55555))
                     c.send((json.dumps(Packet_string)).encode())
                     Packet_string = {
                         "type": "",
@@ -139,7 +141,8 @@ def th_client():
 
                 else:
                     for ip in final_neighbor_list:
-                        if ip != Packet_string["ip"]:
+                        print("Packet_string", Packet_string)
+                        if ip != Packet_string["ip"] and Packet_string["type"] != packet_types["CHECK_USER_ID_RESPONSE"]:
                             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                             c.connect((ip, 55555))
                             c.send((json.dumps(Packet_string)).encode())

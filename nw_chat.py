@@ -73,6 +73,7 @@ def th_server():
     while True:
         clientsocket, addr = server.accept()
         Packet_string_new = json.loads(clientsocket.recv(1024).decode())
+        print("Packet_string_new",Packet_string_new)
         if Packet_string_new["type"] == packet_types["UPDATE_NEIGHBOR"]:
             if Packet_string_new["ip"] not in neighbor_ip:
                 neighbor_ip.append(Packet_string_new["ip"])
@@ -142,7 +143,7 @@ def th_client():
                 else:
                     for ip in final_neighbor_list:
                         print("Packet_string", Packet_string)
-                        if ip != Packet_string["ip"] and Packet_string["type"] != packet_types["CHECK_USER_ID_RESPONSE"]:
+                        if ip != Packet_string["ip"] and (Packet_string["type"] != packet_types["CHECK_USER_ID_RESPONSE"] or Packet_string["type"] != packet_types["CHECK_USER_ID"]):
                             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                             c.connect((ip, 55555))
                             c.send((json.dumps(Packet_string)).encode())

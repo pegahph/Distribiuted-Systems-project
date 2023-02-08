@@ -128,7 +128,7 @@ def th_client():
                 final_neighbor_list = neighbor_ip
 
             if Packet_string["type"] != "":
-                if Packet_string["type"] == packet_types["CHECK_USER_ID_RESPONSE"]:
+                if Packet_string["type"] == packet_types["CHECK_USER_ID_RESPONSE"] and Packet_string["ip"] in neighbor_ip:
                     c.connect((Packet_string["receiver_ip"], 55555))
                     c.send((json.dumps(Packet_string)).encode())
                     Packet_string = {

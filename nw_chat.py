@@ -111,6 +111,7 @@ def th_client():
     global final_neighbor_list
     global infected_nodes
     global first_mem
+    global host
 
     if first_mem == "no":
         for ip in neighbor_ip:
@@ -141,12 +142,12 @@ def th_client():
 
                 else:
                     for ip in final_neighbor_list:
-                        print("Packet_string", Packet_string)
+                        # print("Packet_string", Packet_string)
                         if Packet_string["type"] == packet_types["CHECK_USER_ID"] and len(infected_nodes) == (len(neighbor_ip) -1):
                             Packet_string={
                                 "type": packet_types["MESSAGE"],
                                 "message" :f"\n{id_user} joined... ",
-                                "ip": Packet_string["ip"]
+                                "ip": host
                             }
                         if ip != Packet_string["ip"] and (Packet_string["type"] != packet_types["CHECK_USER_ID_RESPONSE"] or Packet_string["type"] != packet_types["CHECK_USER_ID"]):
                             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

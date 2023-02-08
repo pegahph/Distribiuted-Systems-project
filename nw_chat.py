@@ -79,7 +79,6 @@ def th_server():
                 neighbor_ip.append(Packet_string_new["ip"])
         elif Packet_string_new["type"] == packet_types["CHECK_USER_ID_RESPONSE"]:    
             Packet_string = Packet_string_new
-            print(Packet_string_new["ip"] == host)
             if Packet_string_new["message"] == "refused" and Packet_string_new["ip"] == host:
                 id_user = input("choose ANOTHER id: ")
                 Packet_string = {
@@ -143,6 +142,12 @@ def th_client():
                 else:
                     for ip in final_neighbor_list:
                         print("Packet_string", Packet_string)
+                        if Packet_string["type"] == packet_types["CHECK_USER_ID"] and len(infected_nodes) == (len(neighbor_ip) -1):
+                            Packet_string={
+                                "type": packet_types["MESSAGE"],
+                                "message" :f"\n{id_user} joined... ",
+                                "ip": Packet_string["ip"]
+                            }
                         if ip != Packet_string["ip"] and (Packet_string["type"] != packet_types["CHECK_USER_ID_RESPONSE"] or Packet_string["type"] != packet_types["CHECK_USER_ID"]):
                             c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                             c.connect((ip, 55555))

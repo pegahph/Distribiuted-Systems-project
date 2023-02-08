@@ -31,7 +31,6 @@ def id_check(packet):
     global id_check_counter
     global neighbor_ip
 
-    id_check_counter += 1
     packet_id = packet["id"]
     if packet_id == id_user:
         packet = {
@@ -41,7 +40,7 @@ def id_check(packet):
         }
         return packet
 
-    elif packet_id != id_user and id_check_counter!= len(neighbor_ip):
+    elif packet_id != id_user:
         return ({
              "type": packet_types["CHECK_USER_ID"],
              "id": packet_id,
@@ -131,6 +130,11 @@ def th_client():
                 if Packet_string["type"] == packet_types["CHECK_USER_ID_RESPONSE"]:
                     c.connect((Packet_string["receiver_ip"], 55555))
                     c.send((json.dumps(Packet_string)).encode())
+                    Packet_string = {
+                        "type": "",
+                        "ip": ""
+                    }
+                    infected_nodes.clear()
 
                 else:
                     for ip in final_neighbor_list:

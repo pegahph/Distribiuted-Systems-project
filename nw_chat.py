@@ -56,7 +56,8 @@ def id_check(packet):
         return ({
             "type": packet_types["MESSAGE"],
             "message": f"\n{packet_id} joined.. ",
-            "ip": Packet_string["ip"]
+            "ip": Packet_string["ip"],
+            "history": packet["history"]
         })
 
 
@@ -91,7 +92,8 @@ def th_server():
                 Packet_string = {
                     "type": packet_types["CHECK_USER_ID"],
                     "id": id_user,
-                    "ip": Packet_string_new["ip"]
+                    "ip": Packet_string_new["ip"],
+                    "history": Packet_string_new["history"]
                 }
 
             ''''
@@ -144,7 +146,8 @@ def th_client():
                     c.send((json.dumps(Packet_string)).encode())
                     Packet_string = {
                         "type": "",
-                        "ip": ""
+                        "ip": "",
+                        "history": history
                     }
                     infected_nodes.clear()
 

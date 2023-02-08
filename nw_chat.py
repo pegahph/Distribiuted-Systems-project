@@ -154,8 +154,8 @@ def th_client():
                 else:
                     for ip in final_neighbor_list:
                         if Packet_string["type"] == packet_types["CHECK_USER_ID"] and len(infected_nodes) == (len(neighbor_ip) -1) and ip != Packet_string["ip"]:
-                            for m in Packet_string["history"]:
-                                print(m)
+                            # for m in Packet_string["history"]:
+                            #     print(m)
                             Packet_string={
                                 "type": packet_types["MESSAGE"],
                                 "message" :f"\n{id_user} joined... ",

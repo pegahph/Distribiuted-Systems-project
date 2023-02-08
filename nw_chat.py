@@ -73,7 +73,6 @@ def th_server():
         if Packet_string_new["type"] == packet_types["UPDATE_NEIGHBOR"]:
             if Packet_string_new["ip"] not in neighbor_ip:
                 neighbor_ip.append(Packet_string_new["ip"])
-            print("neighbor_ip", neighbor_ip)
         elif Packet_string_new["type"] == packet_types["CHECK_USER_ID_RESPONSE"]:
             id_user = input("choose ANOTHER id: ")
             Packet_string = {
@@ -118,7 +117,6 @@ def th_client():
 
     while True:
         if len(infected_nodes) != len(neighbor_ip):
-            c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             if num_neighbor > 1:
                 final_neighbor_list = random.sample(neighbor_ip, k=gossip)
             else:
@@ -132,11 +130,9 @@ def th_client():
                 else:
                     for ip in final_neighbor_list:
                         if ip != Packet_string["ip"]:
-                            try:
-                                c.send((json.dumps(Packet_string)).encode())
-                            except:
-                                c.connect((ip, 55555))
-                                c.send((json.dumps(Packet_string)).encode())
+                            c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                            c.connect((ip, 55555))
+                            c.send((json.dumps(Packet_string)).encode())
                             if ip not in infected_nodes:
                                 infected_nodes.append(ip)
             infected_nodes.clear()

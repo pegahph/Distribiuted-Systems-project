@@ -35,7 +35,7 @@ def id_check(packet):
     if packet_id == id_user:
         packet = {
             "type": packet_types["CHECK_USER_ID_RESPONSE"],
-            "message": "choose ANOTHER id: ",
+            "message": "refused",
             "receiver_ip": packet["ip"]
         }
         return packet
@@ -76,13 +76,14 @@ def th_server():
         if Packet_string_new["type"] == packet_types["UPDATE_NEIGHBOR"]:
             if Packet_string_new["ip"] not in neighbor_ip:
                 neighbor_ip.append(Packet_string_new["ip"])
-        elif Packet_string_new["type"] == packet_types["CHECK_USER_ID_RESPONSE"]:
-            id_user = input("choose ANOTHER id: ")
-            Packet_string = {
-                "type": packet_types["CHECK_USER_ID"],
-                "id": id_user,
-                "ip": Packet_string_new["receiver_ip"]
-            }
+        elif Packet_string_new["type"] == packet_types["CHECK_USER_ID_RESPONSE"]:           
+            if packet_types["message"] == "refused" and Packet_string_new["receiver_ip"] == host:
+                id_user = input("choose ANOTHER id: ")
+                # Packet_string = {
+                #     "type": packet_types["CHECK_USER_ID"],
+                #     "id": id_user,
+                #     "ip": Packet_string_new["receiver_ip"]
+                # }
 
             ''''
                 Packet_string={

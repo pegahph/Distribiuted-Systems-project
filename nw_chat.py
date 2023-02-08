@@ -39,7 +39,8 @@ def id_check(packet):
         packet = {
             "type": packet_types["CHECK_USER_ID_RESPONSE"],
             "message": "refused",
-            "ip": packet["ip"]
+            "ip": packet["ip"],
+            "history": packet["history"]
         }
         return packet
 
@@ -47,7 +48,8 @@ def id_check(packet):
         return ({
              "type": packet_types["CHECK_USER_ID"],
              "id": packet_id,
-             "ip": packet["ip"]
+             "ip": packet["ip"],
+             "history": packet["history"]
            })
 
     else:

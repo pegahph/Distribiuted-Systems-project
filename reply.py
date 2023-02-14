@@ -58,6 +58,10 @@ def receiveMessage():
             packet = new_packet
             print(f'{new_packet["id"]} joined the chat!')
         elif new_packet["type"] == packet_types["REPLY_MESSAGE"]:
+            if new_packet["id"] in history.keys():
+                history[new_packet["id"]].append(new_packet["message"])
+            else:
+                history[new_packet["id"]] = [new_packet["message"]]
             new_packet["ip"].append(host)
             packet = new_packet
             print(f'{new_packet["id"]}: {new_packet["message"]}')
@@ -116,18 +120,26 @@ while True:
     new_message = input("")
     if "@" in new_message:
         reply_to = new_message[1: ]
-        message = input("Enter your message: ")
-        packet = {
-            "type": packet_types["REPLY_MESSAGE"],
-            "reply_to": reply_to,
-            "message": message,
-            "id": id,
-            "ip": host
-        }
+        split_message = reply_to.split(":")
+        replied_id = split_message[0]
+        replied_message = split_message[1][1: ]
+        if replied_id not in history.keys():
+            print("the user you entered does not exist, make sure you entered the correct form.")
+        elif replied_message not in history[replied_id]:
+            print("sorry, this message does not exist! make sure you entered the correct form.")
+        else:
+            message = input("\t")
+            packet = {
+                "type": packet_types["REPLY_MESSAGE"],
+                "reply_to": reply_to,
+                "message": message,
+                "id": id,
+                "ip": [host]
+            }
     else:
         packet = {
             "type": packet_types["MESSAGE"],
             "message": new_message,
             "id": id,
-            "ip": host
+            "ip": [host]
         }

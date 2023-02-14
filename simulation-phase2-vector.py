@@ -25,6 +25,9 @@ difvalue=0
 counter=0
 port_start=20000
 
+for i in range(port_start, (port_start+thread_count)):
+      vector_clock[i] = 0
+
 
 for i in range(0,thread_count):
       NeiCout.append(random.randint(1, thread_count-1))

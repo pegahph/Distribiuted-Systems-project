@@ -103,7 +103,8 @@ if is_first_mem == "n":
     initialClients()
     packet = {
         "type": packet_types["JOIN_REQUEST"],
-        "id": id
+        "id": id,
+        "ip": host
     }
     print(f'\nyou joined the chat!')
 else:

@@ -71,20 +71,19 @@ def receiveMessage():
 def sendMessage():
     global packet
     global neighbors
-    gossip = int((1-prob_gossip)*len(neighbors))
     while True:
         susceptible_nodes = neighbors.copy()
         if packet["type"] != "":
-            print(packet)
-            print(susceptible_nodes)
             while len(susceptible_nodes) > 0:
+                print(susceptible_nodes)
                 if len(neighbors) > 1:
+                    gossip = int((1-prob_gossip)*len(neighbors))
                     infected_nodes = random.sample(susceptible_nodes, k=gossip)
                 else:
                     infected_nodes = susceptible_nodes
                 for ip in infected_nodes:
                     susceptible_nodes.remove(ip)
-                    if ip != packet["ip"]:                      
+                    if ip != packet["ip"]:                    
                         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                         client.connect((ip, PORT))
                         client.send((json.dumps(packet)).encode())

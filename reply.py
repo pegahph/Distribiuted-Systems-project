@@ -41,6 +41,7 @@ def initialClients():
 
 
 def receiveMessage():
+    global packet
     global clients
     global neighbors
     global history
@@ -54,6 +55,7 @@ def receiveMessage():
                 clients[new_packet["sender_ip"]] = socket.socket(
                     socket.AF_INET, socket.SOCK_STREAM)
         elif new_packet["type"] == packet_types["JOIN_REQUEST"]:
+            packet = new_packet
             print(f'{new_packet["id"]} joined the chat!')
         elif new_packet["type"] == packet_types["REPLY_MESSAGE"]:
             print(f'{new_packet["id"]}: {new_packet["message"]}')
@@ -63,17 +65,6 @@ def receiveMessage():
                 history[new_packet["id"]].append(new_packet["message"])
             else:
                 history[new_packet["id"]] = [new_packet["message"]]
-            # message = new_packet["message"]
-            # if "@" in message:
-            #     reply_to_id = ""
-            #     message_section = ""
-            #     for i in message.split(" "):
-            #         if "@" in i:
-            #             reply_to_id = i[1: ]
-            #         else:
-            #             message_section += " " + i
-            #     print(f'Reply to {reply_to_id}:{message_section}')
-            # else:
             print(f'{new_packet["id"]}: {new_packet["message"]}')
 
 
@@ -84,6 +75,8 @@ def sendMessage():
     while True:
         susceptible_nodes = neighbors.copy()
         if packet["type"] != "":
+            print(packet)
+            print(susceptible_nodes)
             while len(susceptible_nodes) > 0:
                 if len(neighbors) > 1:
                     infected_nodes = random.sample(susceptible_nodes, k=gossip)
@@ -91,9 +84,10 @@ def sendMessage():
                     infected_nodes = susceptible_nodes
                 for ip in infected_nodes:
                     susceptible_nodes.remove(ip)
-                    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    client.connect((ip, PORT))
-                    client.send((json.dumps(packet)).encode())
+                    if ip != packet["ip"]:                      
+                        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                        client.connect((ip, PORT))
+                        client.send((json.dumps(packet)).encode())
             packet = {
                 "type": ""
             }

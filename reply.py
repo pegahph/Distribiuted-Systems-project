@@ -55,7 +55,7 @@ def receiveMessage():
                 clients[new_packet["sender_ip"]] = socket.socket(
                     socket.AF_INET, socket.SOCK_STREAM)
         elif new_packet["type"] == packet_types["JOIN_REQUEST"]:
-            new_packet["sender_ip"].append(host)
+            new_packet["ip"].append(host)
             packet = new_packet
             print(f'{new_packet["id"]} joined the chat!')
         elif new_packet["type"] == packet_types["REPLY_MESSAGE"]:
@@ -82,7 +82,7 @@ def sendMessage():
                     infected_nodes = susceptible_nodes
                 for ip in infected_nodes:
                     susceptible_nodes.remove(ip)
-                    if ip != packet["ip"]:                    
+                    if ip not in packet["ip"]:                    
                         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                         client.connect((ip, PORT))
                         client.send((json.dumps(packet)).encode())

@@ -48,7 +48,6 @@ def receiveMessage():
     while True:
         client_socket, addr = server.accept()
         new_packet = json.loads(client_socket.recv(1024).decode())
-        print(new_packet)
         if new_packet["type"] == packet_types["UPDATE_NEIGHBOR"]:
             if new_packet["sender_ip"] not in clients.keys():
                 neighbors.append(new_packet["sender_ip"])
@@ -59,9 +58,13 @@ def receiveMessage():
             packet = new_packet
             print(f'{new_packet["id"]} joined the chat!')
         elif new_packet["type"] == packet_types["REPLY_MESSAGE"]:
+            new_packet["ip"].append(host)
+            packet = new_packet
             print(f'{new_packet["id"]}: {new_packet["message"]}')
             print(f'\tReply to {new_packet["reply_to"]}')
         elif new_packet["type"] == packet_types["MESSAGE"]:
+            new_packet["ip"].append(host)
+            packet = new_packet
             if new_packet["id"] in history.keys():
                 history[new_packet["id"]].append(new_packet["message"])
             else:
@@ -118,11 +121,13 @@ while True:
             "type": packet_types["REPLY_MESSAGE"],
             "reply_to": reply_to,
             "message": message,
-            "id": id
+            "id": id,
+            "ip": host
         }
     else:
         packet = {
             "type": packet_types["MESSAGE"],
             "message": new_message,
-            "id": id
+            "id": id,
+            "ip": host
         }

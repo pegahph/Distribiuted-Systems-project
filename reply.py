@@ -48,13 +48,14 @@ def receiveMessage():
     while True:
         client_socket, addr = server.accept()
         new_packet = json.loads(client_socket.recv(1024).decode())
-        # print(new_packet)
+        print(new_packet)
         if new_packet["type"] == packet_types["UPDATE_NEIGHBOR"]:
             if new_packet["sender_ip"] not in clients.keys():
                 neighbors.append(new_packet["sender_ip"])
                 clients[new_packet["sender_ip"]] = socket.socket(
                     socket.AF_INET, socket.SOCK_STREAM)
         elif new_packet["type"] == packet_types["JOIN_REQUEST"]:
+            new_packet["ip"] = host
             packet = new_packet
             print(f'{new_packet["id"]} joined the chat!')
         elif new_packet["type"] == packet_types["REPLY_MESSAGE"]:
@@ -66,10 +67,6 @@ def receiveMessage():
             else:
                 history[new_packet["id"]] = [new_packet["message"]]
             print(f'{new_packet["id"]}: {new_packet["message"]}')
-        new_packet = {
-            "type": ""
-        }
-
 
 def sendMessage():
     global packet
@@ -105,7 +102,7 @@ if is_first_mem == "n":
     packet = {
         "type": packet_types["JOIN_REQUEST"],
         "id": id,
-        "ip": host
+        "ip": host,
     }
     print(f'\nyou joined the chat!')
 else:

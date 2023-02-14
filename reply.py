@@ -55,7 +55,7 @@ def receiveMessage():
                 clients[new_packet["sender_ip"]] = socket.socket(
                     socket.AF_INET, socket.SOCK_STREAM)
         elif new_packet["type"] == packet_types["JOIN_REQUEST"]:
-            new_packet["ip"] = host
+            new_packet["sender_ip"].append(host)
             packet = new_packet
             print(f'{new_packet["id"]} joined the chat!')
         elif new_packet["type"] == packet_types["REPLY_MESSAGE"]:
@@ -102,7 +102,7 @@ if is_first_mem == "n":
     packet = {
         "type": packet_types["JOIN_REQUEST"],
         "id": id,
-        "ip": host,
+        "ip": [host],
     }
     print(f'\nyou joined the chat!')
 else:

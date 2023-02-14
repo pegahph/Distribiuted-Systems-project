@@ -66,6 +66,9 @@ def receiveMessage():
             else:
                 history[new_packet["id"]] = [new_packet["message"]]
             print(f'{new_packet["id"]}: {new_packet["message"]}')
+        new_packet = {
+            "type": ""
+        }
 
 
 def sendMessage():
@@ -75,7 +78,6 @@ def sendMessage():
         susceptible_nodes = neighbors.copy()
         if packet["type"] != "":
             while len(susceptible_nodes) > 0:
-                print(susceptible_nodes)
                 if len(neighbors) > 1:
                     gossip = int((1-prob_gossip)*len(neighbors))
                     infected_nodes = random.sample(susceptible_nodes, k=gossip)
